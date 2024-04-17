@@ -34,37 +34,59 @@ class Fetch {
   int port = 80;
 
  public:
-  void get(String url, String body = "", String header = "") {
-    send(Method::GET, url, body, header);
+  void set_host(String h) { host = h; }
+  void setup(String hostname, String password) {
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(hostname, password);
+    Serial.println("Connecting");
+    while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
+      Serial.println(".");
+    }
+    Serial.println("Connected");
+    Serial.println(WiFi.localIP());
   }
-  void post(String url, String body = "", String header = "") {
-    send(Method::POST, url, body, header);
+  String get(String url, String body = "", String header = "") {
+    return send(Method::GET, url, body, header);
   }
-  void put(String url, String body = "", String header = "") {
-    send(Method::PUT, url, body, header);
+  String post(String url, String body = "", String header = "") {
+    return send(Method::POST, url, body, header);
   }
-  void delete(String url, String body = "", String header = "") {
-    send(Method::DELETE, url, body, header);
+  String put(String url, String body = "", String header = "") {
+    return send(Method::PUT, url, body, header);
+  }
+  String dele(String url, String body = "", String header = "") {
+    return send(Method::DELETE, url, body, header);
   }
 
-  void send(Method m, String url, String body = "", String header = "") {
+  String send(Method m, String url, String body = "", String header = "") {
     String payload = "";
     URL urlp = url_parser(url);
 
     if (host.length() > 0) {
       urlp.domain = host;
     }
-    if (!client.connect(urlp.domain, port)) {
-      return;
+    if (!client.connect(urlp.domain.c_str(), port)) {
+      return String("#");
     }
     payload += method_parser(m) + " " + urlp.path + " HTTP/1.1\n";
     payload += "Host: " + urlp.domain + "\n";
     payload += "Connection: close\n";
-    payload += "Content-Type: application/x-www-form-urlencoded\n";
+    if (body.length() > 0) {
+      payload += "Content-Type: application/x-www-form-urlencoded\n";
+    }
     payload += header;
     payload += "Content-Length: " + String(body.length()) + "\n\n";
-    payload += body;
+    payload += body + "\r\n\r\n";
     client.print(payload);
+    String line;
+    while (client.connected() || client.available()) {
+      if (client.available()) {
+        line = client.readString();
+      }
+    }
+    client.stop();
+    return line;
   }
   URL url_parser(String url) {
     String domain = "";
@@ -81,6 +103,7 @@ class Fetch {
         path += url[i];
       }
     }
+    if (path == "") path = "/";
     return URL(domain, path);
   }
 };
