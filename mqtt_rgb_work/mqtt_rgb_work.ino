@@ -60,7 +60,7 @@ void setup_wifi() {
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
- char buf[length + 1];
+  char buf[length + 1];
   for (int i = 0; i < length; i++) {
     buf[i] = payload[i];
   }
@@ -71,27 +71,27 @@ void callback(char* topic, byte* payload, unsigned int length) {
   if (true) {
     if (rgbp > 255 || rgbp < 0) return;
     if (String(topic) == "/red") {
-      aw(R, rgbp);
+      ledcWrite(0, rgbp);
       red = rgbp;
       Serial.println("Red has change");
     } else if (String(topic) == "/green") {
-      aw(G, rgbp);
+      ledcWrite(1, rgbp);
       green = rgbp;
       Serial.println("Green has change");
     } else if (String(topic) == "/blue") {
-      aw(B, rgbp);
+      ledcWrite(2, rgbp);
       blue = rgbp;
       Serial.println("Red has change");
     } else if (String(topic) == "/relay") {
       dw(RELAY, rgbp > 0 ? 1 : 0);
       Serial.println("Relay has change");
     } else if (String(topic) == "/rgb") {
-      aw(R, rgbp);
       red = rgbp;
       blue = rgbp;
       green = rgbp;
-      aw(G, rgbp);
-      aw(B, rgbp);
+      ledcWrite(0, rgbp);
+      ledcWrite(1, rgbp);
+      ledcWrite(2, rgbp);
       aw(RELAY, rgbp > 0 ? 1 : 0);
       Serial.println("All RGB has change");
     }
@@ -127,14 +127,15 @@ void reconnect() {
 }
 
 void setup() {
-  pm(R, OUTPUT);
-  pm(G, OUTPUT);
-  pm(B, OUTPUT);
-  pm(RELAY, OUTPUT);
+  ledcSetup(0, 5000, 8);
+  ledcSetup(1, 5000, 8);
+  ledcSetup(2, 5000, 8);
 
-  dw(R, LOW);
-  dw(G, LOW);
-  dw(B, LOW);
+  ledcAttachPin(R, 0);
+  ledcAttachPin(G, 1);
+  ledcAttachPin(B, 2);
+
+  pm(RELAY, OUTPUT);
   dw(RELAY, LOW);
 
   dht.begin();
@@ -153,7 +154,7 @@ void loop() {
   unsigned long now = millis();
   if (now - lastMsg > 2000) {
     lastMsg = now;
-    led["red"] =  red > 0 ? 1: 0;
+    led["red"] = red > 0 ? 1 : 0;
     led["green"] = green > 0 ? 1 : 0;
     led["blue"] = blue > 0 ? 1 : 0;
     led["relay"] = dr(RELAY);
