@@ -49,23 +49,27 @@ void setup_wifi() {
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
+  /**
+   * zero is false
+   * not zero is true
+  */
   Serial.println("topic action");
   if (String(topic) == "/red") {
-    dw(R, payload[0] == '1' ? 1 : 0);
+    dw(R, payload[0] != '0' ? 1 : 0);
     Serial.println("Red has change");
   } else if (String(topic) == "/green") {
-    dw(G, payload[0] == '1' ? 1 : 0);
+    dw(G, payload[0] != '0' ? 1 : 0);
     Serial.println("Green has change");
   } else if (String(topic) == "/blue") {
-    dw(B, payload[0] == '1' ? 1 : 0);
+    dw(B, payload[0] != '0' ? 1 : 0);
     Serial.println("Red has change");
   } else if (String(topic) == "/relay") {
-    dw(RELAY, payload[0] == '1' ? 1 : 0);
+    dw(RELAY, payload[0] != '0' ? 1 : 0);
     Serial.println("Relay has change");
   } else if (String(topic) == "/rgb") {
-    dw(R, payload[0] == '1' ? 1 : 0);
-    dw(G, payload[0] == '1' ? 1 : 0);
-    dw(B, payload[0] == '1' ? 1 : 0);
+    dw(R, payload[0] != '0' ? 1 : 0);
+    dw(G, payload[0] != '0' ? 1 : 0);
+    dw(B, payload[0] != '0' ? 1 : 0);
     dw(RELAY, payload[0] == '1' ? 1 : 0);
     Serial.println("All RG has change");
   }
