@@ -9,3 +9,7 @@
 [Adafruit NeoMatrix](https://github.com/adafruit/Adafruit_NeoMatrix)
 
 [MFRC522](https://github.com/miguelbalboa/rfid)
+
+[PubSubClient](https://github.com/knolleary/pubsubclient)
+
+[ArduinoJSON](https://github.com/bblanchon/ArduinoJson)
