@@ -1,16 +1,16 @@
 #include "macro.h"
 
-#define L1 18
-#define L2 19
-#define L3 23
-#define L4 33
+#define L1 26
+#define L2 32
+#define L3 33
+#define L4 25
 const char* node_name = "/node1";
 
 char buffer[512];
 
 const char* ssid = "UMR_Lab1";
 const char* password = "Ubon2566";
-const char* mqtt_server = "192.168.1.115";
+const char* mqtt_server = "192.168.1.11";
 
 WiFiClient espClient;
 
